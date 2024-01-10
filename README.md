@@ -2,7 +2,7 @@
 
 This is a simple Redux implementation from scratch. It is based on the [Redux Fundamentals](https://redux.js.org/tutorials/fundamentals/part-1-overview) tutorial.
 
-![Flowchart](https://github.com/callyberz/redux/blob/main/redux-flowchart.png?raw=true)
+![Flowchart](https://github.com/callyberz/redux/blob/main/public/redux-flowchart.png?raw=true)
 
 ## Getting started
 
