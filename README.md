@@ -2,6 +2,8 @@
 
 This is a simple Redux implementation from scratch. It is based on the [Redux Fundamentals](https://redux.js.org/tutorials/fundamentals/part-1-overview) tutorial.
 
+![Flowchart](https://github.com/callyberz/redux/blob/main/redux-flowchart.png?raw=true)
+
 ## Getting started
 
 ```sh
@@ -93,3 +95,9 @@ const result = compose(
   bar,
 )(1);
 ```
+
+## References
+
+- [NYTimes Github](https://nytimes.github.io/oak-byo-react-prosemirror-redux/post/build-your-own-redux/)
+- [sharpcorner](https://www.c-sharpcorner.com/article/build-your-own-redux-from-scratch/)
+- [Redux Official](https://redux.js.org/)
