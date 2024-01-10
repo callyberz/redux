@@ -6,6 +6,12 @@ export interface Action {
   type: string;
 }
 
+export interface ReduxStore {
+  dispatch: (action: Action) => void;
+  subscribe: (listener: () => void) => () => void;
+  getState: () => Counter;
+}
+
 export enum ActionTypes {
   INCREMENT = 'counter/incremented',
   DECREMENT = 'counter/decremented'
@@ -30,7 +36,14 @@ export function reducer(
   }
 }
 
-function createStore(reducer: (state: Counter, action: Action) => Counter) {
+function createStore(
+  reducer: (state: Counter, action: Action) => Counter,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  enhancer?: any
+) {
+  if (enhancer) {
+    return enhancer(createStore)(reducer);
+  }
   let state = reducer(initialState, { type: '' });
   const listeners: (() => void)[] = []; // array of listener functions
   return {
@@ -55,6 +68,56 @@ function createStore(reducer: (state: Counter, action: Action) => Counter) {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function compose(...fns: any[]) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (x: any) => fns.reduceRight((v, f) => f(v), x);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+function applySingleMiddleware(middleware: any) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (createStore: any) => (reducer: any) => {
+    const store = createStore(reducer);
+
+    return {
+      ...store,
+      dispatch: middleware({
+        getState: store.getState,
+        dispatch: store.dispatch
+      })
+    };
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function applyMiddleware(...middlewares: any) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (createStore: any) => (reducer: any, preloadedState: any) => {
+    const store = createStore(reducer, preloadedState);
+
+    let dispatch = store.dispatch;
+    const middlewareAPI = {
+      getState: store.getState,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      dispatch: (action: any) => dispatch(action)
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const chain = middlewares.map((middleware: any) =>
+      middleware(middlewareAPI)
+    );
+    dispatch = compose(...chain)(store.dispatch);
+
+    return {
+      ...store,
+      dispatch
+    };
+  };
+}
+
 export const Redux = {
-  createStore
+  createStore,
+  applyMiddleware,
+  compose
 };
